@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Costing Sheet - Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans">
+  <header class="bg-blue-600 text-white p-4">
+    <h1 class="text-xl">Project Costing Sheet - Pro</h1>
+  </header>
+  <main class="p-4">
+    <div class="mb-4">
+      <label class="block mb-1" for="projectName">Project Name / Sheet ID</label>
+      <input id="projectName" class="border p-2 w-full" type="text" />
+    </div>
+    <div class="mb-4">
+      <label class="block mb-1" for="sheetCurrency">Sheet Currency</label>
+      <select id="sheetCurrency" class="border p-2 w-full">
+        <option value="USD">USD ($)</option>
+        <option value="EUR">EUR (€)</option>
+        <option value="AED">AED (د.إ)</option>
+        <option value="OMR">OMR (ر.ع.)</option>
+        <option value="SAR">SAR (ر.س)</option>
+      </select>
+    </div>
+    <div id="itemForm" class="border p-4 mb-4 bg-white rounded">
+      <h2 class="text-lg mb-2">Add Cost Item</h2>
+      <div class="mb-2">
+        <label class="block mb-1" for="itemCategory">Category</label>
+        <select id="itemCategory" class="border p-2 w-full">
+          <option value="other">Other</option>
+          <option value="manpower">Manpower</option>
+          <option value="tools">Tools Purchase</option>
+          <option value="equipment">Equipment Rental</option>
+        </select>
+      </div>
+      <div id="manpowerFields" class="hidden">
+        <div class="mb-2"><input id="manpowerDesignation" class="border p-2 w-full" placeholder="Designation" /></div>
+        <div class="mb-2"><input id="manpowerQty" type="number" class="border p-2 w-full" placeholder="Personnel Qty" /></div>
+        <div class="mb-2"><input id="manpowerSalaryRate" type="number" class="border p-2 w-full" placeholder="Salary Rate" /></div>
+        <div class="mb-2"><input id="manpowerDuration" type="number" class="border p-2 w-full" placeholder="Duration" /></div>
+      </div>
+      <div id="toolsFields" class="hidden">
+        <div class="mb-2"><input id="toolsDescription" class="border p-2 w-full" placeholder="Description" /></div>
+        <div class="mb-2"><input id="toolsQuantity" type="number" class="border p-2 w-full" placeholder="Quantity" /></div>
+        <div class="mb-2"><input id="toolsRate" type="number" class="border p-2 w-full" placeholder="Rate" /></div>
+      </div>
+      <div id="equipmentFields" class="hidden">
+        <div class="mb-2"><input id="equipmentDescription" class="border p-2 w-full" placeholder="Description" /></div>
+        <div class="mb-2"><input id="equipmentQuantity" type="number" class="border p-2 w-full" placeholder="Quantity" /></div>
+        <div class="mb-2"><input id="equipmentRate" type="number" class="border p-2 w-full" placeholder="Rate" /></div>
+      </div>
+      <div id="otherFields" class="">
+        <div class="mb-2"><input id="otherDescription" class="border p-2 w-full" placeholder="Description" /></div>
+        <div class="mb-2"><input id="otherQuantity" type="number" class="border p-2 w-full" placeholder="Quantity" /></div>
+        <div class="mb-2"><input id="otherRate" type="number" class="border p-2 w-full" placeholder="Rate" /></div>
+      </div>
+      <button id="addItem" class="bg-green-600 text-white px-4 py-2 rounded">Add Item</button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white" id="itemsTable">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="p-2">#</th>
+            <th class="p-2">Category</th>
+            <th class="p-2">Description</th>
+            <th class="p-2">Qty</th>
+            <th class="p-2">Rate</th>
+            <th class="p-2">Amount</th>
+            <th class="p-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="itemsBody"></tbody>
+      </table>
+    </div>
+    <div class="mt-4 text-right">
+      <span class="font-bold">Grand Total: </span>
+      <span id="grandTotal">0</span>
+    </div>
+    <div class="mt-4">
+      <button id="downloadJson" class="bg-blue-600 text-white px-4 py-2 rounded">Download JSON</button>
+    </div>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
