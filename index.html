@@ -8,7 +8,8 @@
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body class="bg-gray-100 font-sans">
-  <header class="bg-blue-600 text-white p-4 flex justify-between">
+  <div class="max-w-screen-xl mx-auto p-2 md:p-4 space-y-6">
+  <header class="bg-blue-600 text-white p-4 flex justify-between shadow-md sticky top-0 z-10">
     <h1 class="text-xl">Project Costing Sheet - Pro</h1>
     <span id="currentUser">Local</span>
   </header>
@@ -17,11 +18,11 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
           <label class="block text-sm mb-1" for="projectName">Project Name / Sheet ID</label>
-          <input id="projectName" class="border p-2 w-full" type="text" />
+          <input id="projectName" class="border rounded-md p-2 w-full" type="text" />
         </div>
         <div>
           <label class="block text-sm mb-1" for="sheetCurrency">Sheet Currency</label>
-          <select id="sheetCurrency" class="border p-2 w-full">
+          <select id="sheetCurrency" class="border rounded-md p-2 w-full">
             <option value="USD">USD ($)</option>
             <option value="EUR">EUR (€)</option>
             <option value="AED">AED (د.إ)</option>
@@ -29,7 +30,7 @@
             <option value="SAR">SAR (ر.س)</option>
           </select>
         </div>
-        <div class="flex items-end space-x-2">
+        <div class="flex flex-wrap items-end gap-2">
           <button id="loadProject" class="bg-gray-700 text-white px-3 py-2 rounded">Load/Switch Project</button>
           <button id="saveProject" class="bg-blue-600 text-white px-3 py-2 rounded">Save Local</button>
           <button id="exportExcel" class="bg-green-600 text-white px-3 py-2 rounded">Export Excel</button>
@@ -45,19 +46,19 @@
     <section id="aiSearch" class="bg-white p-4 rounded shadow">
       <h2 class="text-lg mb-2">Intelligent Search (Gemini AI)</h2>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
-        <textarea id="geminiSearchQuery" class="border p-2 w-full md:col-span-3" rows="3" placeholder="Enter your query..."></textarea>
-        <input id="geminiApiKey" class="border p-2 w-full" type="password" placeholder="API Key (optional)" />
-        <input id="geminiModelName" class="border p-2 w-full" type="text" placeholder="Model name" value="gemini-2.0-flash" />
+        <textarea id="geminiSearchQuery" class="border rounded-md p-2 w-full md:col-span-3" rows="3" placeholder="Enter your query..."></textarea>
+        <input id="geminiApiKey" class="border rounded-md p-2 w-full" type="password" placeholder="API Key (optional)" />
+        <input id="geminiModelName" class="border rounded-md p-2 w-full" type="text" placeholder="Model name" value="gemini-2.0-flash" />
         <button id="geminiSearchButton" class="bg-indigo-600 text-white px-3 py-2 rounded md:col-span-3">Search with AI</button>
       </div>
-      <pre id="geminiSearchResults" class="border p-2 bg-gray-50 h-32 overflow-auto"></pre>
+      <pre id="geminiSearchResults" class="border rounded-md p-2 bg-gray-50 h-32 overflow-auto"></pre>
     </section>
 
     <section id="itemForm" class="bg-white p-4 rounded shadow">
       <h2 class="text-lg mb-2">Add / Edit Cost Item</h2>
       <div class="mb-2">
         <label class="block text-sm mb-1" for="itemCategory">Category</label>
-        <select id="itemCategory" class="border p-2 w-full">
+        <select id="itemCategory" class="border rounded-md p-2 w-full">
           <option value="other">Other</option>
           <option value="manpower">Manpower</option>
           <option value="tools">Tools Purchase</option>
@@ -65,65 +66,65 @@
         </select>
       </div>
       <div id="manpowerFields" class="hidden grid grid-cols-2 gap-2">
-        <input id="manpowerDesignation" class="border p-2" placeholder="Designation" />
-        <input id="manpowerQty" type="number" class="border p-2" placeholder="Personnel Qty" />
-        <input id="manpowerSalaryRate" type="number" class="border p-2" placeholder="Salary Rate" />
-        <input id="manpowerSalaryUnit" class="border p-2" placeholder="Salary Unit" />
-        <input id="manpowerDuration" type="number" class="border p-2" placeholder="Duration" />
-        <select id="manpowerDurationUnit" class="border p-2">
+        <input id="manpowerDesignation" class="border rounded-md p-2" placeholder="Designation" />
+        <input id="manpowerQty" type="number" class="border rounded-md p-2" placeholder="Personnel Qty" />
+        <input id="manpowerSalaryRate" type="number" class="border rounded-md p-2" placeholder="Salary Rate" />
+        <input id="manpowerSalaryUnit" class="border rounded-md p-2" placeholder="Salary Unit" />
+        <input id="manpowerDuration" type="number" class="border rounded-md p-2" placeholder="Duration" />
+        <select id="manpowerDurationUnit" class="border rounded-md p-2">
           <option value="day">Day(s)</option>
           <option value="week">Week(s)</option>
           <option value="month">Month(s)</option>
           <option value="year">Year(s)</option>
         </select>
-        <input id="manpowerAccommodationRate" type="number" class="border p-2" placeholder="Accommodation Rate" />
-        <select id="manpowerAccommodationRateUnit" class="border p-2">
+        <input id="manpowerAccommodationRate" type="number" class="border rounded-md p-2" placeholder="Accommodation Rate" />
+        <select id="manpowerAccommodationRateUnit" class="border rounded-md p-2">
           <option value="none">N/A</option>
           <option value="day">Per Day</option>
           <option value="week">Per Week</option>
           <option value="month">Per Month</option>
         </select>
-        <select id="manpowerAccommodationType" class="border p-2">
+        <select id="manpowerAccommodationType" class="border rounded-md p-2">
           <option value="none">Accommodation Type</option>
           <option value="shared">Shared</option>
           <option value="separate">Separate</option>
         </select>
-        <input id="manpowerAccommodationSharedAmong" type="number" class="border p-2" placeholder="Shared Among" />
-        <input id="manpowerFlights" type="number" class="border p-2" placeholder="Flights Cost p.p." />
-        <input id="manpowerCarRentalRate" type="number" class="border p-2" placeholder="Car Rental Rate" />
-        <select id="manpowerCarRentalRateUnit" class="border p-2">
+        <input id="manpowerAccommodationSharedAmong" type="number" class="border rounded-md p-2" placeholder="Shared Among" />
+        <input id="manpowerFlights" type="number" class="border rounded-md p-2" placeholder="Flights Cost p.p." />
+        <input id="manpowerCarRentalRate" type="number" class="border rounded-md p-2" placeholder="Car Rental Rate" />
+        <select id="manpowerCarRentalRateUnit" class="border rounded-md p-2">
           <option value="none">N/A</option>
           <option value="day">Per Day</option>
           <option value="week">Per Week</option>
           <option value="month">Per Month</option>
         </select>
-        <select id="manpowerCarRentalType" class="border p-2">
+        <select id="manpowerCarRentalType" class="border rounded-md p-2">
           <option value="none">Car Type</option>
           <option value="shared">Shared</option>
           <option value="separate">Separate</option>
         </select>
-        <input id="manpowerCarRentalSharedAmong" type="number" class="border p-2" placeholder="Car Shared Among" />
-        <input id="manpowerVisa" type="number" class="border p-2" placeholder="Visa Cost p.p." />
+        <input id="manpowerCarRentalSharedAmong" type="number" class="border rounded-md p-2" placeholder="Car Shared Among" />
+        <input id="manpowerVisa" type="number" class="border rounded-md p-2" placeholder="Visa Cost p.p." />
       </div>
       <div id="toolsFields" class="hidden grid grid-cols-2 gap-2">
-        <input id="toolsDescription" class="border p-2" placeholder="Description" />
-        <input id="toolsQuantity" type="number" class="border p-2" placeholder="Quantity" />
-        <input id="toolsUnit" class="border p-2" placeholder="Unit" />
-        <input id="toolsRate" type="number" class="border p-2" placeholder="Rate" />
+        <input id="toolsDescription" class="border rounded-md p-2" placeholder="Description" />
+        <input id="toolsQuantity" type="number" class="border rounded-md p-2" placeholder="Quantity" />
+        <input id="toolsUnit" class="border rounded-md p-2" placeholder="Unit" />
+        <input id="toolsRate" type="number" class="border rounded-md p-2" placeholder="Rate" />
       </div>
       <div id="equipmentFields" class="hidden grid grid-cols-2 gap-2">
-        <input id="equipmentDescription" class="border p-2" placeholder="Description" />
-        <input id="equipmentQuantity" type="number" class="border p-2" placeholder="Quantity" />
-        <input id="equipmentUnit" class="border p-2" placeholder="Unit" />
-        <input id="equipmentRate" type="number" class="border p-2" placeholder="Rate" />
+        <input id="equipmentDescription" class="border rounded-md p-2" placeholder="Description" />
+        <input id="equipmentQuantity" type="number" class="border rounded-md p-2" placeholder="Quantity" />
+        <input id="equipmentUnit" class="border rounded-md p-2" placeholder="Unit" />
+        <input id="equipmentRate" type="number" class="border rounded-md p-2" placeholder="Rate" />
       </div>
       <div id="otherFields" class="grid grid-cols-2 gap-2">
-        <input id="otherDescription" class="border p-2" placeholder="Description" />
-        <input id="otherQuantity" type="number" class="border p-2" placeholder="Quantity" />
-        <input id="otherUnit" class="border p-2" placeholder="Unit" />
-        <input id="otherRate" type="number" class="border p-2" placeholder="Rate" />
+        <input id="otherDescription" class="border rounded-md p-2" placeholder="Description" />
+        <input id="otherQuantity" type="number" class="border rounded-md p-2" placeholder="Quantity" />
+        <input id="otherUnit" class="border rounded-md p-2" placeholder="Unit" />
+        <input id="otherRate" type="number" class="border rounded-md p-2" placeholder="Rate" />
       </div>
-      <input id="itemRemarks" class="border p-2 mt-2 w-full" placeholder="Remarks (optional)" />
+      <input id="itemRemarks" class="border rounded-md p-2 mt-2 w-full" placeholder="Remarks (optional)" />
       <div class="mt-2 space-x-2">
         <button id="addItem" class="bg-green-600 text-white px-4 py-2 rounded">Add Item</button>
         <button id="cancelEdit" class="bg-gray-400 text-white px-4 py-2 rounded hidden">Cancel Edit</button>
@@ -131,7 +132,7 @@
     </section>
 
     <section class="overflow-x-auto bg-white p-4 rounded shadow">
-      <table class="min-w-full text-sm" id="itemsTable">
+      <table class="min-w-full text-xs md:text-sm" id="itemsTable">
         <thead class="bg-gray-200">
           <tr>
             <th class="p-2 sticky left-0 bg-gray-200">Sr.</th>
@@ -164,6 +165,7 @@
       <span class="font-bold">Grand Total: </span><span id="grandTotal">0</span>
     </div>
   </main>
+  </div>
 
   <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
     <div class="text-white">Loading...</div>
