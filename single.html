@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Project Costing Sheet - Pro</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body class="bg-gray-100 font-sans max-w-screen-lg mx-auto p-2">
+  <header class="bg-blue-600 text-white p-4 flex justify-between sticky top-0 z-10">
+    <h1 class="text-xl">Project Costing Sheet - Pro</h1>
+    <span id="currentUser">Local</span>
+  </header>
+  <main class="space-y-4">
+    <section id="projectControls" class="bg-white p-4 rounded shadow">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div>
+          <label class="block text-sm mb-1" for="projectName">Project Name / Sheet ID</label>
+          <input id="projectName" class="border p-2 w-full" type="text" />
+        </div>
+        <div>
+          <label class="block text-sm mb-1" for="sheetCurrency">Sheet Currency</label>
+          <select id="sheetCurrency" class="border p-2 w-full">
+            <option value="USD">USD ($)</option>
+            <option value="EUR">EUR (€)</option>
+            <option value="AED">AED (د.إ)</option>
+            <option value="OMR">OMR (ر.ع.)</option>
+            <option value="SAR">SAR (ر.س)</option>
+          </select>
+        </div>
+        <div class="flex flex-wrap items-end space-x-2">
+          <button id="loadProject" class="bg-gray-700 text-white px-3 py-2 rounded">Load/Switch Project</button>
+          <button id="saveProject" class="bg-blue-600 text-white px-3 py-2 rounded">Save</button>
+          <button id="exportExcel" class="bg-green-600 text-white px-3 py-2 rounded">Export Excel</button>
+          <button id="downloadJson" class="bg-indigo-600 text-white px-3 py-2 rounded">Download JSON</button>
+          <input type="file" id="importJson" class="hidden" accept="application/json" />
+          <button id="importJsonBtn" class="bg-yellow-600 text-white px-3 py-2 rounded">Import JSON</button>
+          <input type="file" id="importExcel" class="hidden" accept=".xlsx,.xls" />
+          <button id="importExcelBtn" class="bg-purple-600 text-white px-3 py-2 rounded">Import Excel</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="aiSearch" class="bg-white p-4 rounded shadow">
+      <h2 class="text-lg mb-2">Intelligent Search (Gemini AI)</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-2">
+        <textarea id="geminiSearchQuery" class="border p-2 w-full md:col-span-3" rows="3" placeholder="Enter your query..."></textarea>
+        <input id="geminiApiKey" class="border p-2 w-full" type="password" placeholder="API Key (optional)" />
+        <input id="geminiModelName" class="border p-2 w-full" type="text" placeholder="Model name" value="gemini-2.0-flash" />
+        <button id="geminiSearchButton" class="bg-indigo-600 text-white px-3 py-2 rounded md:col-span-3">Search with AI</button>
+      </div>
+      <pre id="geminiSearchResults" class="border p-2 bg-gray-50 h-32 overflow-auto"></pre>
+    </section>
+
+    <section id="itemForm" class="bg-white p-4 rounded shadow">
+      <h2 class="text-lg mb-2">Add / Edit Cost Item</h2>
+      <div class="mb-2">
+        <label class="block text-sm mb-1" for="itemCategory">Category</label>
+        <select id="itemCategory" class="border p-2 w-full">
+          <option value="other">Other</option>
+          <option value="manpower">Manpower</option>
+          <option value="tools">Tools Purchase</option>
+          <option value="equipment">Equipment Rental</option>
+        </select>
+      </div>
+      <div id="manpowerFields" class="hidden grid grid-cols-2 gap-2">
+        <input id="manpowerDesignation" class="border p-2" placeholder="Designation" />
+        <input id="manpowerQty" type="number" class="border p-2" placeholder="Personnel Qty" />
+        <input id="manpowerSalaryRate" type="number" class="border p-2" placeholder="Salary Rate" />
+        <input id="manpowerSalaryUnit" class="border p-2" placeholder="Salary Unit" />
+        <input id="manpowerDuration" type="number" class="border p-2" placeholder="Duration" />
+        <select id="manpowerDurationUnit" class="border p-2">
+          <option value="day">Day(s)</option>
+          <option value="week">Week(s)</option>
+          <option value="month">Month(s)</option>
+          <option value="year">Year(s)</option>
+        </select>
+        <input id="manpowerAccommodationRate" type="number" class="border p-2" placeholder="Accommodation Rate" />
+        <select id="manpowerAccommodationRateUnit" class="border p-2">
+          <option value="none">N/A</option>
+          <option value="day">Per Day</option>
+          <option value="week">Per Week</option>
+          <option value="month">Per Month</option>
+        </select>
+        <select id="manpowerAccommodationType" class="border p-2">
+          <option value="none">Accommodation Type</option>
+          <option value="shared">Shared</option>
+          <option value="separate">Separate</option>
+        </select>
+        <input id="manpowerAccommodationSharedAmong" type="number" class="border p-2" placeholder="Shared Among" />
+        <input id="manpowerFlights" type="number" class="border p-2" placeholder="Flights Cost p.p." />
+        <input id="manpowerCarRentalRate" type="number" class="border p-2" placeholder="Car Rental Rate" />
+        <select id="manpowerCarRentalRateUnit" class="border p-2">
+          <option value="none">N/A</option>
+          <option value="day">Per Day</option>
+          <option value="week">Per Week</option>
+          <option value="month">Per Month</option>
+        </select>
+        <select id="manpowerCarRentalType" class="border p-2">
+          <option value="none">Car Type</option>
+          <option value="shared">Shared</option>
+          <option value="separate">Separate</option>
+        </select>
+        <input id="manpowerCarRentalSharedAmong" type="number" class="border p-2" placeholder="Car Shared Among" />
+        <input id="manpowerVisa" type="number" class="border p-2" placeholder="Visa Cost p.p." />
+      </div>
+      <div id="toolsFields" class="hidden grid grid-cols-2 gap-2">
+        <input id="toolsDescription" class="border p-2" placeholder="Description" />
+        <input id="toolsQuantity" type="number" class="border p-2" placeholder="Quantity" />
+        <input id="toolsUnit" class="border p-2" placeholder="Unit" />
+        <input id="toolsRate" type="number" class="border p-2" placeholder="Rate" />
+      </div>
+      <div id="equipmentFields" class="hidden grid grid-cols-2 gap-2">
+        <input id="equipmentDescription" class="border p-2" placeholder="Description" />
+        <input id="equipmentQuantity" type="number" class="border p-2" placeholder="Quantity" />
+        <input id="equipmentUnit" class="border p-2" placeholder="Unit" />
+        <input id="equipmentRate" type="number" class="border p-2" placeholder="Rate" />
+      </div>
+      <div id="otherFields" class="grid grid-cols-2 gap-2">
+        <input id="otherDescription" class="border p-2" placeholder="Description" />
+        <input id="otherQuantity" type="number" class="border p-2" placeholder="Quantity" />
+        <input id="otherUnit" class="border p-2" placeholder="Unit" />
+        <input id="otherRate" type="number" class="border p-2" placeholder="Rate" />
+      </div>
+      <input id="itemRemarks" class="border p-2 mt-2 w-full" placeholder="Remarks (optional)" />
+      <div class="mt-2 space-x-2">
+        <button id="addItem" class="bg-green-600 text-white px-4 py-2 rounded">Add Item</button>
+        <button id="cancelEdit" class="bg-gray-400 text-white px-4 py-2 rounded hidden">Cancel Edit</button>
+      </div>
+    </section>
+
+    <section class="overflow-x-auto bg-white p-4 rounded shadow">
+      <table class="min-w-full text-xs md:text-sm" id="itemsTable">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="p-2 sticky left-0 bg-gray-200">Sr.</th>
+            <th class="p-2 sticky left-12 bg-gray-200">Category</th>
+            <th class="p-2 sticky left-32 bg-gray-200">Desc/Design.</th>
+            <th class="p-2">Qty/Pers.</th>
+            <th class="p-2">Rate/Sal.</th>
+            <th class="p-2">Unit/Sal.U.</th>
+            <th class="p-2">MP Dur.</th>
+            <th class="p-2">MP Dur.U.</th>
+            <th class="p-2">Acc.Rate</th>
+            <th class="p-2">Acc.Rate.U</th>
+            <th class="p-2">Acc.Type</th>
+            <th class="p-2">Acc.Shared</th>
+            <th class="p-2">Flights</th>
+            <th class="p-2">Car.Rate</th>
+            <th class="p-2">Car.Rate.U</th>
+            <th class="p-2">Car.Type</th>
+            <th class="p-2">Car.Shared</th>
+            <th class="p-2">Visa</th>
+            <th class="p-2">Remarks</th>
+            <th class="p-2">Amount</th>
+            <th class="p-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="itemsBody"></tbody>
+      </table>
+    </section>
+    <div class="mt-4 text-right bg-white p-4 rounded shadow">
+      <span class="font-bold">Grand Total: </span><span id="grandTotal">0</span>
+    </div>
+  </main>
+
+  <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="text-white">Loading...</div>
+  </div>
+  <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <div class="bg-white p-4 rounded shadow max-w-md">
+      <h3 id="modalTitle" class="text-lg font-bold mb-2"></h3>
+      <div id="modalBody" class="mb-4"></div>
+      <button id="modalClose" class="bg-blue-600 text-white px-4 py-2 rounded">OK</button>
+    </div>
+  </div>
+
+<script>
+const projects = {};
+const projectNameInput = document.getElementById('projectName');
+const sheetCurrencySelect = document.getElementById('sheetCurrency');
+const loadProjectBtn = document.getElementById('loadProject');
+const saveProjectBtn = document.getElementById('saveProject');
+const exportExcelBtn = document.getElementById('exportExcel');
+const downloadJsonBtn = document.getElementById('downloadJson');
+const importJsonInput = document.getElementById('importJson');
+const importJsonBtn = document.getElementById('importJsonBtn');
+const importExcelInput = document.getElementById('importExcel');
+const importExcelBtn = document.getElementById('importExcelBtn');
+const geminiQuery = document.getElementById('geminiSearchQuery');
+const geminiApiKey = document.getElementById('geminiApiKey');
+const geminiModelName = document.getElementById('geminiModelName');
+const geminiSearchBtn = document.getElementById('geminiSearchButton');
+const geminiResults = document.getElementById('geminiSearchResults');
+
+const itemCategory = document.getElementById('itemCategory');
+const addItemBtn = document.getElementById('addItem');
+const cancelEditBtn = document.getElementById('cancelEdit');
+const itemsBody = document.getElementById('itemsBody');
+const grandTotal = document.getElementById('grandTotal');
+
+const loadingOverlay = document.getElementById('loadingOverlay');
+const modal = document.getElementById('modal');
+const modalTitle = document.getElementById('modalTitle');
+const modalBody = document.getElementById('modalBody');
+const modalClose = document.getElementById('modalClose');
+
+let currentProjectName = 'defaultSheet';
+let costingItems = [];
+let currentSheetCurrency = 'USD';
+let editingItemIndex = -1;
+
+function showModal(title, body) {
+  modalTitle.textContent = title;
+  modalBody.textContent = body;
+  modal.classList.remove('hidden');
+}
+modalClose.addEventListener('click', () => modal.classList.add('hidden'));
+
+function showLoading(show) {
+  loadingOverlay.classList.toggle('hidden', !show);
+}
+
+function convertDuration(value, sourceUnit, targetUnit) {
+  const dayFactor = { day: 1, week: 7, month: 30, year: 365 };
+  return (Number(value) * (dayFactor[sourceUnit] || 1)) / (dayFactor[targetUnit] || 1);
+}
+
+function calculateAmount(item) {
+  if (item.category === 'manpower') {
+    const salary = Number(item.salaryRate || 0) * Number(item.duration || 0);
+    const accDur = convertDuration(item.duration || 0, item.durationUnit || 'day', item.accommodationRateUnit || 'none');
+    const accCostTotal = Number(item.accommodationRate || 0) * accDur;
+    const accShared = item.accommodationSharedAmong > 0 ? item.accommodationSharedAmong : 1;
+    const accCostPP = accCostTotal / accShared;
+
+    const carDur = convertDuration(item.duration || 0, item.durationUnit || 'day', item.carRentalRateUnit || 'none');
+    const carCostTotal = Number(item.carRentalRate || 0) * carDur;
+    const carShared = item.carRentalSharedAmong > 0 ? item.carRentalSharedAmong : 1;
+    const carCostPP = carCostTotal / carShared;
+
+    const totalPerPerson = salary + accCostPP + carCostPP + Number(item.flights || 0) + Number(item.visa || 0);
+    return totalPerPerson * Number(item.qty || 0);
+  }
+  return Number(item.qty || 0) * Number(item.rate || 0);
+}
+
+function renderTable() {
+  itemsBody.innerHTML = '';
+  let total = 0;
+  costingItems.forEach((item, idx) => {
+    const amount = calculateAmount(item);
+    total += amount;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="border p-2">${idx + 1}</td>
+      <td class="border p-2">${item.category}</td>
+      <td class="border p-2">${item.description || item.designation || ''}</td>
+      <td class="border p-2">${item.qty || ''}</td>
+      <td class="border p-2">${item.rate || item.salaryRate || ''}</td>
+      <td class="border p-2">${item.unit || item.salaryUnit || ''}</td>
+      <td class="border p-2">${item.duration || ''}</td>
+      <td class="border p-2">${item.durationUnit || ''}</td>
+      <td class="border p-2">${item.accommodationRate || 'N/A'}</td>
+      <td class="border p-2">${item.accommodationRateUnit || 'N/A'}</td>
+      <td class="border p-2">${item.accommodationType || 'N/A'}</td>
+      <td class="border p-2">${item.accommodationSharedAmong || 'N/A'}</td>
+      <td class="border p-2">${item.flights || 'N/A'}</td>
+      <td class="border p-2">${item.carRentalRate || 'N/A'}</td>
+      <td class="border p-2">${item.carRentalRateUnit || 'N/A'}</td>
+      <td class="border p-2">${item.carRentalType || 'N/A'}</td>
+      <td class="border p-2">${item.carRentalSharedAmong || 'N/A'}</td>
+      <td class="border p-2">${item.visa || 'N/A'}</td>
+      <td class="border p-2">${item.remarks || ''}</td>
+      <td class="border p-2">${amount.toFixed(2)} ${currentSheetCurrency}</td>
+      <td class="border p-2 text-right">
+        <button data-idx="${idx}" class="edit text-blue-600 mr-2">Edit</button>
+        <button data-idx="${idx}" class="delete text-red-600">Delete</button>
+      </td>`;
+    itemsBody.appendChild(tr);
+  });
+  grandTotal.textContent = `${total.toFixed(2)} ${currentSheetCurrency}`;
+}
+
+function saveToMemory() {
+  projects[currentProjectName] = { items: costingItems.slice(), sheetCurrency: currentSheetCurrency };
+}
+
+function loadFromMemory(name) {
+  const data = projects[name] || { items: [], sheetCurrency: 'USD' };
+  currentProjectName = name;
+  costingItems = data.items.slice();
+  currentSheetCurrency = data.sheetCurrency;
+  projectNameInput.value = name;
+  sheetCurrencySelect.value = currentSheetCurrency;
+  renderTable();
+}
+
+function collectManpowerData() {
+  return {
+    designation: document.getElementById('manpowerDesignation').value,
+    qty: document.getElementById('manpowerQty').value,
+    salaryRate: document.getElementById('manpowerSalaryRate').value,
+    salaryUnit: document.getElementById('manpowerSalaryUnit').value,
+    duration: document.getElementById('manpowerDuration').value,
+    durationUnit: document.getElementById('manpowerDurationUnit').value,
+    accommodationRate: document.getElementById('manpowerAccommodationRate').value,
+    accommodationRateUnit: document.getElementById('manpowerAccommodationRateUnit').value,
+    accommodationType: document.getElementById('manpowerAccommodationType').value,
+    accommodationSharedAmong: document.getElementById('manpowerAccommodationSharedAmong').value,
+    flights: document.getElementById('manpowerFlights').value,
+    carRentalRate: document.getElementById('manpowerCarRentalRate').value,
+    carRentalRateUnit: document.getElementById('manpowerCarRentalRateUnit').value,
+    carRentalType: document.getElementById('manpowerCarRentalType').value,
+    carRentalSharedAmong: document.getElementById('manpowerCarRentalSharedAmong').value,
+    visa: document.getElementById('manpowerVisa').value,
+  };
+}
+
+function collectSimpleData(prefix) {
+  return {
+    description: document.getElementById(`${prefix}Description`).value,
+    qty: document.getElementById(`${prefix}Quantity`).value,
+    unit: document.getElementById(`${prefix}Unit`).value,
+    rate: document.getElementById(`${prefix}Rate`).value,
+  };
+}
+
+function clearForm() {
+  document.querySelectorAll('#itemForm input').forEach(i => (i.value = ''));
+  editingItemIndex = -1;
+  addItemBtn.textContent = 'Add Item';
+  cancelEditBtn.classList.add('hidden');
+  showFields();
+}
+
+function addItem() {
+  const category = itemCategory.value;
+  let item = { category, remarks: document.getElementById('itemRemarks').value };
+  if (category === 'manpower') item = { ...item, ...collectManpowerData() };
+  else if (category === 'tools') item = { ...item, ...collectSimpleData('tools') };
+  else if (category === 'equipment') item = { ...item, ...collectSimpleData('equipment') };
+  else item = { ...item, ...collectSimpleData('other') };
+
+  if (editingItemIndex > -1) {
+    costingItems[editingItemIndex] = item;
+  } else {
+    costingItems.push(item);
+  }
+  saveToMemory();
+  clearForm();
+  renderTable();
+}
+addItemBtn.addEventListener('click', addItem);
+cancelEditBtn.addEventListener('click', clearForm);
+
+function handleTableClick(e) {
+  const idx = Number(e.target.dataset.idx);
+  if (e.target.classList.contains('delete')) {
+    costingItems.splice(idx, 1);
+    saveToMemory();
+    renderTable();
+  } else if (e.target.classList.contains('edit')) {
+    editingItemIndex = idx;
+    const item = costingItems[idx];
+    itemCategory.value = item.category;
+    showFields();
+    if (item.category === 'manpower') {
+      const keys = collectManpowerData();
+      Object.keys(keys).forEach(k => {
+        document.getElementById('manpower' + k.charAt(0).toUpperCase() + k.slice(1)).value = item[k] || '';
+      });
+    } else {
+      const prefix = item.category === 'tools' ? 'tools' : item.category === 'equipment' ? 'equipment' : 'other';
+      const keys = collectSimpleData(prefix);
+      Object.keys(keys).forEach(k => {
+        document.getElementById(prefix + k.charAt(0).toUpperCase() + k.slice(1)).value = item[k] || '';
+      });
+    }
+    document.getElementById('itemRemarks').value = item.remarks || '';
+    addItemBtn.textContent = 'Update Item';
+    cancelEditBtn.classList.remove('hidden');
+  }
+}
+itemsBody.addEventListener('click', handleTableClick);
+
+function showFields() {
+  document.getElementById('manpowerFields').classList.add('hidden');
+  document.getElementById('toolsFields').classList.add('hidden');
+  document.getElementById('equipmentFields').classList.add('hidden');
+  document.getElementById('otherFields').classList.add('hidden');
+  if (itemCategory.value === 'manpower') {
+    document.getElementById('manpowerFields').classList.remove('hidden');
+  } else if (itemCategory.value === 'tools') {
+    document.getElementById('toolsFields').classList.remove('hidden');
+  } else if (itemCategory.value === 'equipment') {
+    document.getElementById('equipmentFields').classList.remove('hidden');
+  } else {
+    document.getElementById('otherFields').classList.remove('hidden');
+  }
+}
+itemCategory.addEventListener('change', showFields);
+
+function loadProject() {
+  const name = projectNameInput.value || 'defaultSheet';
+  loadFromMemory(name);
+}
+loadProjectBtn.addEventListener('click', loadProject);
+
+sheetCurrencySelect.addEventListener('change', () => {
+  currentSheetCurrency = sheetCurrencySelect.value;
+  saveToMemory();
+  renderTable();
+});
+
+saveProjectBtn.addEventListener('click', () => {
+  saveToMemory();
+  showModal('Saved', 'Project data saved for this session.');
+});
+
+function exportJson() {
+  const data = {
+    projectName: currentProjectName,
+    sheetCurrency: currentSheetCurrency,
+    items: costingItems,
+    exportedAt: new Date().toISOString(),
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${currentProjectName}_CostingSheet_${currentSheetCurrency}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+downloadJsonBtn.addEventListener('click', exportJson);
+
+importJsonBtn.addEventListener('click', () => importJsonInput.click());
+importJsonInput.addEventListener('change', () => {
+  const file = importJsonInput.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      currentProjectName = data.projectName || currentProjectName;
+      projectNameInput.value = currentProjectName;
+      currentSheetCurrency = data.sheetCurrency || currentSheetCurrency;
+      sheetCurrencySelect.value = currentSheetCurrency;
+      costingItems = costingItems.concat(data.items || []);
+      saveToMemory();
+      renderTable();
+      showModal('Import', 'JSON import successful.');
+    } catch (err) {
+      showModal('Error', 'Failed to import JSON.');
+    }
+  };
+  reader.readAsText(file);
+  importJsonInput.value = '';
+});
+
+importExcelBtn.addEventListener('click', () => importExcelInput.click());
+importExcelInput.addEventListener('change', () => {
+  const file = importExcelInput.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const workbook = XLSX.read(e.target.result, { type: 'binary' });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+      json.forEach(row => {
+        const item = {
+          category: row.Category || 'other',
+          description: row.Description || row.Designation,
+          designation: row.Designation || '',
+          qty: row['Qty/Pers.'] || row.Quantity || '',
+          rate: row.Rate || '',
+          salaryRate: row['Salary Rate'] || '',
+          salaryUnit: row['Salary Unit'] || '',
+          unit: row.Unit || '',
+          duration: row.Duration || '',
+          durationUnit: row['Duration Unit'] || '',
+          accommodationRate: row['Acc.Rate'] || '',
+          accommodationRateUnit: row['Acc.Rate.U'] || '',
+          accommodationType: row['Acc.Type'] || '',
+          accommodationSharedAmong: row['Acc.Shared'] || '',
+          flights: row.Flights || '',
+          carRentalRate: row['Car.Rate'] || '',
+          carRentalRateUnit: row['Car.Rate.U'] || '',
+          carRentalType: row['Car.Type'] || '',
+          carRentalSharedAmong: row['Car.Shared'] || '',
+          visa: row.Visa || '',
+          remarks: row.Remarks || '',
+        };
+        costingItems.push(item);
+      });
+      saveToMemory();
+      renderTable();
+      showModal('Import', 'Excel import successful.');
+    } catch (err) {
+      showModal('Error', 'Failed to import Excel.');
+    }
+  };
+  reader.readAsBinaryString(file);
+  importExcelInput.value = '';
+});
+
+function exportExcel() {
+  const wsData = [];
+  wsData.push([
+    'Category','Desc/Design.','Qty/Pers.','Rate/Sal.','Unit/Sal.U.','MP Dur.','MP Dur.U.','Acc.Rate','Acc.Rate.U','Acc.Type','Acc.Shared','Flights','Car.Rate','Car.Rate.U','Car.Type','Car.Shared','Visa','Remarks','Amount'
+  ]);
+  costingItems.forEach(item => {
+    wsData.push([
+      item.category,
+      item.description || item.designation || '',
+      item.qty || '',
+      item.rate || item.salaryRate || '',
+      item.unit || item.salaryUnit || '',
+      item.duration || '',
+      item.durationUnit || '',
+      item.accommodationRate || '',
+      item.accommodationRateUnit || '',
+      item.accommodationType || '',
+      item.accommodationSharedAmong || '',
+      item.flights || '',
+      item.carRentalRate || '',
+      item.carRentalRateUnit || '',
+      item.carRentalType || '',
+      item.carRentalSharedAmong || '',
+      item.visa || '',
+      item.remarks || '',
+      calculateAmount(item).toFixed(2),
+    ]);
+  });
+  wsData.push([]);
+  wsData.push(['Grand Total', grandTotal.textContent]);
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Cost Sheet');
+  XLSX.writeFile(wb, `${currentProjectName}_Categorized_Costs_${currentSheetCurrency}.xlsx`);
+}
+exportExcelBtn.addEventListener('click', exportExcel);
+
+function performGeminiSearch() {
+  const key = geminiApiKey.value;
+  const model = geminiModelName.value || 'gemini-2.0-flash';
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+  const prompt = `Currency: ${currentSheetCurrency}\nItems:\n${JSON.stringify(costingItems, null, 2)}\nQuery: ${geminiQuery.value}`;
+  showLoading(true);
+  fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
+  })
+    .then(r => r.json())
+    .then(res => {
+      geminiResults.textContent = res.candidates?.[0]?.content?.parts?.[0]?.text || 'No response';
+    })
+    .catch(() => {
+      geminiResults.textContent = 'Error calling Gemini API';
+    })
+    .finally(() => showLoading(false));
+}
+
+geminiSearchBtn.addEventListener('click', performGeminiSearch);
+
+loadFromMemory(currentProjectName);
+</script>
+</body>
+</html>
